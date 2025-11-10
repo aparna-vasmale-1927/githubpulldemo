@@ -1,32 +1,52 @@
-# This is a basic workflow to help you get started with Actions
+# -----------------------------
+# ✅ CI/CD Workflow by Aparna
+# -----------------------------
 
-name: hello
+name: CI-CD Demo Workflow
 
-# Controls when the workflow will run
+# 👇 Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
+    branches: [ "main" ]    # Runs when you push to main branch
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main" ]    # Also runs on pull requests to main
+  workflow_dispatch:         # Allows manual run from Actions tab
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+# 👇 Define jobs (Build/Test + Deploy)
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+  build_and_test:
+    name: Build and Test (CI)
+    runs-on: ubuntu-latest   # GitHub provides a virtual Ubuntu runner
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
-      - name: AWS Sustainability Scanner GitHub Action
-  # You may pin to the exact commit or the version.
-  # uses: aws-actions/sustainability-scanner@d6067411fc5290a836e3ebcf388c746d83cf0e9f
-  uses: aws-actions/sustainability-scanner@v1
-  
+      # Step 1️⃣ Checkout your repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      # Step 2️⃣ Run AWS Sustainability Scanner (as part of CI)
+      - name: AWS Sustainability Scanner
+        uses: aws-actions/sustainability-scanner@v1
+
+      # Step 3️⃣ Simulate running build/tests
+      - name: Run tests
+        run: |
+          echo "✅ Running project tests..."
+          echo "✅ All tests passed successfully!"
+
+  deploy:
+    name: Deploy (CD)
+    runs-on: ubuntu-latest
+    needs: build_and_test    # Wait until CI finishes successfully
+    if: success()            # Run only if CI succeeded
+
+    steps:
+      # Step 1️⃣ Checkout again (required for deployment step)
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2️⃣ Simulate Deployment (you can replace with real deploy commands later)
+      - name: Deploy to Server (Simulation)
+        run: |
+          echo "🚀 Starting Deployment..."
+          echo "📦 Uploading files to server..."
+          echo "✅ Deployment completed successfully!"
